@@ -4,4 +4,4 @@
 
 ### To be eligible for submission, fork this repository, work with the assigned issue, add your name below and open a pull request.
 
-### This project was created by Vishal Reddy Parvatha Reddy
+### This project was created by VishalReddy Parvatha Reddy
