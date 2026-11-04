@@ -1,0 +1,5 @@
+ckpt/
+data/
+logs/
+__pycache__/
+jobs.txt
