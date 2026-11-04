@@ -83,8 +83,14 @@ def train(kind, data, seed=0, epochs=300, bs=32, lr=1e-3, f=64,
                 drj = s * torch.randn_like(pos)
                 with torch.no_grad():
                     tgt = model.target_enc(pos + drj) - model.target_enc(pos, geo)
-                pred = model.pred(h, geo, drj) - h
-                loss_j = ((pred - tgt) / s).pow(2).mean()
+                # As in V-JEPA 2-AC the predictor is trained *on top of* the encoder:
+                # h is detached here (the encoder is shaped by E/F and, through the
+                # predictor, by the Taylor loss). The loss is relative so that it is
+                # invariant to the (unconstrained) scale of the latent response.
+                hd = h.detach()
+                pred = model.pred(hd, geo, drj) - hd
+                loss_j = (pred - tgt).pow(2).sum((1, 2)) / tgt.pow(2).sum((1, 2)).clamp_min(1e-12)
+                loss_j = loss_j.mean()
                 loss = loss + w_jepa * loss_j
                 terms["jepa"] = loss_j.item()
             opt.zero_grad(set_to_none=True)
